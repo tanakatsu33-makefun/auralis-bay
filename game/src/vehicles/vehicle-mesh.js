@@ -8,6 +8,7 @@ const wheelGeo = new THREE.CylinderGeometry(1, 1, 1, 12);
 wheelGeo.rotateZ(Math.PI / 2);
 const bodyMats = new Map();
 const glassMat = new THREE.MeshLambertMaterial({ color: 0x1a1430, emissive: 0x3a2050 });
+const skyGlass = new THREE.MeshLambertMaterial({ color: 0x3b2a66, emissive: 0xc4607a });
 const tireMat = new THREE.MeshLambertMaterial({ color: 0x15121c });
 const headMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff2c8).multiplyScalar(2.2), toneMapped: false });
 const tailMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff2a3a).multiplyScalar(1.8), toneMapped: false });
@@ -41,6 +42,17 @@ export function buildCarMesh(modelId, color, { police = false } = {}) {
   const cabinLen = L * spec.cabinLen;
   const cab = part(body, boxGeo, glassMat, 0, lift + bodyH + cabinH / 2 - 0.02, L * spec.cabinShift, W * 0.9, cabinH, cabinLen);
   part(body, boxGeo, paint, 0, lift + bodyH + cabinH - 0.02, L * spec.cabinShift, W * 0.94, 0.08, cabinLen * 0.96);
+  // raked windshield and rear glass catch the sunset
+  for (const s of [1, -1]) {
+    const slab = part(body, boxGeo, skyGlass, 0, lift + bodyH + cabinH * 0.5, L * spec.cabinShift + s * cabinLen * 0.5, W * 0.86, cabinH * 1.05, 0.06, false);
+    slab.rotation.x = -s * 0.5;
+  }
+  // door shut-lines and a belt-line stripe in the accent colour
+  part(body, boxGeo, bodyMat(spec.stripe || 0x140a2e), 0, lift + bodyH * 0.55, 0, W * 1.02, 0.05, L * 0.92, false);
+  if (modelId === 'kestrel' || modelId === 'stingray') {
+    part(body, boxGeo, paint, 0, lift + bodyH + 0.28, -L / 2 + 0.2, W * 0.9, 0.06, 0.4, true);
+    for (const s of [-1, 1]) part(body, boxGeo, paint, s * W * 0.4, lift + bodyH + 0.14, -L / 2 + 0.2, 0.06, 0.28, 0.36, false);
+  }
   if (police) {
     part(body, boxGeo, bodyMat(0xf4f4ff), 0, lift + bodyH * 0.5, 0, W * 1.01, bodyH * 0.35, L * 0.5);
   }
@@ -72,8 +84,8 @@ export function buildCarMesh(modelId, color, { police = false } = {}) {
   if (police) {
     const red = part(body, boxGeo, redLamp, -0.46, lift + bodyH + cabinH + 0.14, L * spec.cabinShift, 0.8, 0.22, 0.38, false);
     const blue = part(body, boxGeo, blueLamp, 0.46, lift + bodyH + cabinH + 0.14, L * spec.cabinShift, 0.8, 0.22, 0.38, false);
-    const gr = makeGlowSprite(0xff2030, 11, 1); gr.position.copy(red.position); gr.position.y += 0.4;
-    const gb = makeGlowSprite(0x3070ff, 11, 1); gb.position.copy(blue.position); gb.position.y += 0.4;
+    const gr = makeGlowSprite(0xff2030, 5, 0.9); gr.position.copy(red.position); gr.position.y += 0.3;
+    const gb = makeGlowSprite(0x3070ff, 5, 0.9); gb.position.copy(blue.position); gb.position.y += 0.3;
     body.add(gr, gb);
     glows.redLamp = red; glows.blueLamp = blue; glows.redGlow = gr; glows.blueGlow = gb;
   }

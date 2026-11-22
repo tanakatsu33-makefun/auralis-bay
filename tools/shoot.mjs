@@ -1,7 +1,7 @@
 // Reproducible screenshots of the REAL game: serves game/, opens ?shot=<scene>&seed=1 in Chrome, saves JPEGs.
 // usage: node tools/shoot.mjs [--out dir] [scene ...]     (default: the four contest scenes into screenshots/)
 import { spawn } from 'node:child_process';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { chromium } from '/workspace/makefun/gta6/tools/node_modules/playwright-core/index.mjs';
@@ -40,7 +40,12 @@ try {
     await page.waitForTimeout(400);
     if (evalExpr) console.log('eval:', JSON.stringify(await page.evaluate(evalExpr)));
     const file = join(outDir, (DEFAULT[scene] ?? scene) + '.jpg');
-    await page.screenshot({ path: file, type: 'jpeg', quality: 85 });
+    // JPEG quality 85, stepping down only if a frame would exceed the 256 KiB cap with margin
+    for (const quality of [85, 80, 75, 70]) {
+      const buf = await page.screenshot({ type: 'jpeg', quality });
+      writeFileSync(file, buf);
+      if (buf.length < 245000) break;
+    }
     console.log('saved', file, errors.length ? 'ERRORS: ' + errors.join(' | ') : 'ok');
     if (errors.length) failed = true;
     await page.close();
