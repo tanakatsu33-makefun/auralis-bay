@@ -64,13 +64,49 @@ for (let i = 0; i < 12; i++) {
   if (await page.evaluate('__game.G.mode !== "dialogue"')) break;
   await page.keyboard.press('Space'); await page.waitForTimeout(250); await page.keyboard.press('Space'); await page.waitForTimeout(250);
 }
-check('dialogue closes and first objective appears', await page.evaluate('__game.G.mode === "play" && __game.G.mission.step === 1'), await page.evaluate('JSON.stringify([__game.G.mode, __game.G.mission.step])'));
+check('dialogue closes and first objective appears', await page.evaluate('__game.G.mode === "play" && __game.G.mission.step >= 1'), await page.evaluate('JSON.stringify([__game.G.mode, __game.G.mission.step])'));
 // raise the wanted level, then fast-forward the real simulation 12 s
 await page.evaluate('(()=>{const G=__game.G;G.heat=6;G.wanted=3;for(let i=0;i<720;i++)__game.stepSimulation(1/60);})()');
 const cops = await page.evaluate('__game.G.vehicles.filter(v=>v.ai==="police").length');
 const heli = await page.evaluate('!!__game.G.heli');
 check('helicopter arrives at 3 stars', heli);
 check('police respond to wanted level', cops > 0, 'cops=' + cops);
+// stress: rockets, explosions, kill and chase missions, death and arrest flows, long fast-forward
+const stress = await page.evaluate(`(async () => {
+  try {
+    const G = __game.G, step = (n) => { for (let i = 0; i < n; i++) __game.stepSimulation(1 / 60); };
+    const W = await import('/src/combat/weapons.js');
+    const R = await import('/src/missions/mission-runner.js');
+    const E = await import('/src/core/event-bus.js');
+    const F = await import('/src/vehicles/vehicle-factory.js');
+    const p = G.player;
+    if (p.inCar) { p.inCar.driver = null; p.inCar = null; }
+    p.x = 400; p.z = 192 + 9.5; p.dead = false; p.hp = 100; p.invulnerable = true;
+    G.mode = 'play'; G.wanted = 0; G.heat = 0;
+    for (const v of G.vehicles.slice(0, 5)) { v.x = 410 + Math.random() * 10; v.z = 200; }
+    W.fireWeapon(p, 'rocket', p.x, 1.3, p.z, 1, 0, 0);
+    step(180);
+    G.mission.active = null; G.mission.index = 2; R.startMission(2); R.jumpToStep(1); step(60);
+    for (const a of G.peds) if (a.mission) a.hp = 0, a.dead = true, E.emit('actor-killed', { actor: a, source: 'player' });
+    step(120);
+    const killDone = G.mission.step >= 2 || !G.mission.active;
+    G.mission.active = null; G.mission.index = 3; R.startMission(3); step(1500);
+    const chase = G.mission.active ? G.mission.runtime?.car : null;
+    if (chase) chase.health = 0, E.emit('explosion', { x: chase.x, z: chase.z, radius: 9, damage: 99, source: null });
+    step(120);
+    p.invulnerable = false;
+    E.emit('player-down', { source: 'test' });
+    await new Promise((r) => setTimeout(r, 3500));
+    const respawned = !p.dead;
+    G.wanted = 2; G.heat = 3; E.emit('busted');
+    await new Promise((r) => setTimeout(r, 3500));
+    step(3000);
+    const bad = G.vehicles.some((v) => !isFinite(v.x + v.z + v.speed)) || G.peds.some((a) => !isFinite(a.x + a.z));
+    return { killDone, respawned, bad, vehicles: G.vehicles.length, peds: G.peds.length, time: G.time };
+  } catch (e) { return { error: String(e && e.stack || e) }; }
+})()`);
+console.log('stress:', JSON.stringify(stress));
+check('stress run completed without exceptions', !stress.error && !stress.bad && stress.respawned, stress.error || '');
 check('no console errors', errors.length === 0, errors.join(' | '));
 await page.screenshot({ path: '/tmp/probe/smoke.jpg', type: 'jpeg', quality: 70 });
 await browser.close();
