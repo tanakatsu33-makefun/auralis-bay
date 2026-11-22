@@ -12,7 +12,13 @@ let heli = null, spot = null, beam = null, pool = null;
 
 function buildHeliMesh() {
   const g = new THREE.Group();
-  const hull = new THREE.MeshLambertMaterial({ color: 0x1c1a2e });
+  const hull = new THREE.MeshLambertMaterial({ color: 0x3a3c6a, emissive: 0x151630 });
+  const canopy = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 8), new THREE.MeshBasicMaterial({ color: 0x8fe8ff }));
+  canopy.scale.set(0.95, 0.7, 1.1);
+  canopy.position.set(0, 0.35, 1.5);
+  const lamp = makeGlowSprite(0xfff4d0, 6, 1);
+  lamp.position.set(0, -1.2, 0.8);
+  g.add(canopy, lamp);
   const white = new THREE.MeshLambertMaterial({ color: 0xf4f4ff });
   const body = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 8), hull);
   body.scale.set(1.3, 1.2, 2.6);
@@ -55,7 +61,7 @@ export function installHelicopter(scene) {
   const coneGeo = new THREE.ConeGeometry(1, 1, 24, 1, true);
   coneGeo.translate(0, -0.5, 0);
   coneGeo.rotateX(-Math.PI / 2); // apex at origin, opening toward +z
-  beam = new THREE.Mesh(coneGeo, new THREE.MeshBasicMaterial({ color: 0xfff0c8, transparent: true, opacity: 0.05, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }));
+  beam = new THREE.Mesh(coneGeo, new THREE.MeshBasicMaterial({ color: 0xfff0c8, transparent: true, opacity: 0.11, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }));
   beam.visible = false;
   beam.frustumCulled = false;
   scene.add(beam);

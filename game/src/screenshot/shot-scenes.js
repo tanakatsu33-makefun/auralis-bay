@@ -79,8 +79,9 @@ async function sceneStory() {
 async function sceneTitle() {
   baseProgress();
   const p = G.player;
-  saveToSlot(1);
   G.cash = 3120; G.mission.completed = ['m1']; G.mission.index = 1;
+  saveToSlot(1);
+  G.cash = 18450; G.mission.completed = ['m1', 'm2', 'm3']; G.mission.index = 3;
   saveToSlot(2);
   placePlayer(270, 200, 0);
   p.mesh.visible = false;

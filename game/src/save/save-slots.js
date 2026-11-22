@@ -51,7 +51,7 @@ export function describeSlot(n) {
   if (!d) return `SLOT ${n} — empty`;
   const done = d.mission.completed.length;
   const next = MISSIONS[d.mission.index];
-  return `SLOT ${n} · ${fmtMoney(d.cash)} · ${done}/${MISSIONS.length} missions${next ? '' : ' ✔'}`;
+  return `SLOT ${n} - Day ${done + 1} - ${fmtMoney(d.cash)}${next ? '' : ' ✔'}`;
 }
 
 export function hasAnySave() {

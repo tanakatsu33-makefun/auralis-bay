@@ -39,11 +39,14 @@ async function sceneCover() {
   startMission(4);
   setWanted(4);
   const cops = [];
-  for (const dx of [8, 15, 25, 36]) cops.push(spawnPatrolCar('x', 3, x0 + dx, -1));
-  cops.forEach((c, i) => { c.speed = 31; c.vx = -31; c.z = road + (i % 2 ? -1.8 : -6); });
+  p.armor = 55; p.hp = 82;
+  for (const dx of [7, 11, 18, 30]) cops.push(spawnPatrolCar('x', 3, x0 + dx, -1));
+  const lanesZ = [lane + 0.2, road - 7.4, road - 0.9, road - 4];
+  cops.forEach((c, i) => { c.speed = 31; c.vx = -31; c.z = lanesZ[i]; });
   const heli = spawnHelicopter(x0 + 60, road - 10);
   G.autopilot = (inp) => { inp.throttle = 0.8; inp.steer = 0; };
   advance(2.6, () => {
+    cops.forEach((c, i) => { c.z += (lanesZ[i] - c.z) * 0.25; c.vz *= 0.5; });
     p.inCar = car;
     heli.angle = Math.PI / 2 + 0.1; heli.x = car.x + 30; heli.z = car.z + 4; heli.y = 15;
   });
@@ -53,11 +56,16 @@ async function sceneCover() {
   [[cx + 22, -1, 'brisa'], [cx + 58, 1, 'okapi'], [cx + 92, -1, 'halcyon'], [cx + 40, 1, 'bulwark']].forEach(([x, side, m]) => {
     spawnVehicle(m, x, road + side * 6.9, side > 0 ? -Math.PI / 2 : Math.PI / 2, { parked: true });
   });
-  for (let i = 0; i < 10; i++) {
-    const a = spawnPedestrian(cx + 14 + i * 11, road + (i % 2 ? 9.5 : -9.5), { role: 'civilian', state: 'walk' });
-    a.axis = 'x'; a.lane = road + (i % 2 ? 9.5 : -9.5); a.dir = i % 3 ? 1 : -1;
+  const bright = [0xff3d8b, 0x27e1c8, 0xffd23a, 0x9b6bff, 0xff7a30, 0x4aa3ff, 0x7aff7a];
+  for (let i = 0; i < 14; i++) {
+    const side = i % 2 ? 9.2 : -9.2;
+    const a = spawnPedestrian(cx - 4 + i * 5, road + side, { role: 'civilian', state: 'walk', shirt: bright[i % bright.length] });
+    a.axis = 'x'; a.lane = road + side; a.dir = i % 3 ? 1 : -1;
+    a.mesh.scale.setScalar(1.4);
   }
-  advance(0.4, () => { p.inCar = car; heli.angle = Math.PI / 2 + 0.1; heli.x = car.x + 30; heli.z = car.z + 4; heli.y = 15; });
+  heli.mesh.scale.setScalar(1.7);
+  const holdCops = () => cops.forEach((c, i) => { c.z += (lanesZ[i] - c.z) * 0.25; c.vz *= 0.5; });
+  advance(0.4, () => { holdCops(); p.inCar = car;heli.angle = Math.PI / 2 + 0.1; heli.x = car.x + 24; heli.z = car.z + 3; heli.y = 11; });
   document.getElementById('toast').classList.remove('show');
 }
 

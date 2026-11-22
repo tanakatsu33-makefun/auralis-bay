@@ -37,7 +37,7 @@ export function titleCamera(t, camera) {
   // hover east of downtown and drift in an arc, looking west into the setting sun over the ocean
   const a = Math.PI / 2 + Math.sin(t * 0.07) * 0.55;
   const cx = SIZE * 0.5, cz = SIZE * 0.5, r = 300;
-  pos.set(cx + Math.sin(a) * r, 118 + Math.sin(t * 0.13) * 8, cz + Math.cos(a) * r);
+  pos.set(cx + Math.sin(a) * r, 80 + Math.sin(t * 0.13) * 8, cz + Math.cos(a) * r);
   look.set(cx - 120, 20, cz + 40);
   camera.position.copy(pos);
   camera.lookAt(look);

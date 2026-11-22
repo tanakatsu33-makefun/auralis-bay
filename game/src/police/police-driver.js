@@ -44,6 +44,7 @@ export function drivePolice(v, dt) {
     driveTraffic(v, dt);
     return;
   }
+  if (!v.aiState.chase) startPursuit(v);
   const st = v.aiState;
   v.siren = true;
   const t = targetOf(p);
