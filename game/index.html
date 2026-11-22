@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NEON TIDE: Auralis Bay</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+</head>
+<body>
+<div id="viewport"></div>
+
+<div id="hud" class="hidden">
+  <section id="mission-log" class="panel">
+    <div id="mission-title">FREE ROAM</div>
+    <div id="mission-objective">Explore Auralis Bay</div>
+    <div id="mission-distance"></div>
+  </section>
+
+  <section id="wanted-panel" class="panel">
+    <div id="wanted-stars" aria-label="wanted level"></div>
+    <div id="cash">$0</div>
+    <div id="district-name"></div>
+  </section>
+
+  <canvas id="minimap" width="440" height="440"></canvas>
+
+  <section id="vitals" class="panel">
+    <div class="bar-row"><span class="bar-label">HP</span><div class="bar"><div id="health-fill"></div></div></div>
+    <div class="bar-row"><span class="bar-label">AR</span><div class="bar"><div id="armor-fill"></div></div></div>
+  </section>
+
+  <section id="drive-panel" class="panel">
+    <div id="speedometer"><span id="speed-value">0</span><small>KM/H</small></div>
+    <div id="radio"><span class="radio-dot"></span><span id="radio-name">RADIO OFF</span></div>
+    <div id="weapon-info"></div>
+  </section>
+
+  <div id="banner"></div>
+  <div id="toast"></div>
+  <div id="crosshair"></div>
+  <div id="hint"></div>
+</div>
+
+<div id="dialogue-box" class="hidden">
+  <canvas id="dialogue-portrait" width="160" height="160"></canvas>
+  <div id="dialogue-text">
+    <div id="dialogue-name"></div>
+    <div id="dialogue-line"></div>
+    <div id="dialogue-next">[SPACE] continue</div>
+  </div>
+</div>
+
+<div id="mission-list" class="hidden panel"></div>
+
+<div id="title-screen" class="hidden">
+  <div id="title-card">
+    <div id="game-logo">NEON<b>TIDE</b></div>
+    <div id="game-sub">AURALIS BAY</div>
+    <div id="title-menu">
+      <button id="btn-continue">CONTINUE</button>
+      <button id="btn-new">NEW GAME</button>
+      <button id="btn-slots">SAVE SLOTS</button>
+    </div>
+    <div id="slot-list" class="hidden"></div>
+    <div id="title-tip">WASD move &middot; mouse aim &middot; E enter car &middot; Q radio</div>
+  </div>
+</div>
+
+<div id="pause-menu" class="hidden panel">
+  <h2>PAUSED</h2>
+  <div id="pause-slots"></div>
+  <button id="btn-resume">RESUME</button>
+  <button id="btn-quit">TITLE SCREEN</button>
+  <div id="pause-help"></div>
+</div>
+
+<div id="fade"></div>
+<div id="loading">Tuning the skyline...</div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
