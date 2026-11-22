@@ -28,12 +28,20 @@ import { saveToSlot } from '../save/save-slots.js';
 import { togglePause } from './game-flow.js';
 import { onPauseOpened } from '../ui/pause-menu.js';
 import { lampFlicker } from '../fx/street-life.js';
+import { on } from './event-bus.js';
 
-export const sim = { world: null, paused: false };
+export const sim = { world: null, paused: false, lockLostAt: -1 };
+
+on('pointer-lock-lost', () => {
+  if (G.mode !== 'play') return;
+  sim.lockLostAt = performance.now();
+  togglePause();
+  onPauseOpened();
+});
 
 function handleGlobalKeys() {
   const p = G.player;
-  if (wasTapped('Escape')) { togglePause(); if (G.mode === 'paused') onPauseOpened(); }
+  if (wasTapped('Escape') && performance.now() - sim.lockLostAt > 250) { togglePause(); if (G.mode === 'paused') onPauseOpened(); }
   if (G.mode !== 'play') return;
   if (wasTapped('KeyF') || (wasTapped('KeyE') && !(nearShop(p) && !p.inCar))) {
     if (p.inCar) exitCar(p); else tryEnterCar(p);

@@ -13,7 +13,7 @@ export function installMissionBoard() {
   startBeam = createBeam(0xffb347);
   objectiveBeam = createBeam(0x27e1c8);
   on('mission-passed', (m) => {
-    emit('banner', 'MISSION PASSED  +$' + m.reward);
+    emit('banner', m.id === 'm7' ? 'THE CITY IS YOURS — NEON TIDE COMPLETE' : 'MISSION PASSED  +$' + m.reward);
     emit('toast', m.weapon ? 'Unlocked: ' + m.weapon.toUpperCase() : m.title);
     emit('autosave');
   });

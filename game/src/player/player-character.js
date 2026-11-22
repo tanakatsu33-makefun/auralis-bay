@@ -4,7 +4,8 @@ import { buildHumanoid, animateHumanoid } from '../characters/humanoid-mesh.js';
 import { updateOnFoot } from './on-foot-controls.js';
 import { updateDriving } from './driving-controls.js';
 import { collideCircle } from '../world/city-generator.js';
-import { syncMesh } from '../vehicles/vehicle-physics.js';
+import { hurtPlayer } from '../combat/damage.js';
+import { emit } from '../core/event-bus.js';
 
 export const SPAWN_POINTS = [
   { x: 64 * 5 + 11, z: 64 * 6 + 11, name: 'Tamarind Loft' },
@@ -30,6 +31,26 @@ export function placePlayer(x, z, heading = 0) {
   p.dead = false; p.hp = p.maxHp; p.inCar = null; p.mesh.visible = true;
 }
 
+// On foot, cars are solid: slow ones block you, fast ones knock you down and hurt.
+function vehicleContacts(p) {
+  for (const v of G.vehicles) {
+    const dx = p.x - v.x, dz = p.z - v.z;
+    if (dx * dx + dz * dz > 25) continue;
+    const sp = Math.hypot(v.vx, v.vz);
+    for (const off of [v.half, -v.half]) {
+      const cx = v.x + Math.sin(v.heading) * off, cz = v.z + Math.cos(v.heading) * off;
+      const ex = p.x - cx, ez = p.z - cz, d = Math.hypot(ex, ez), min = v.radius + 0.4;
+      if (d >= min || d < 1e-4) continue;
+      p.x += (ex / d) * (min - d); p.z += (ez / d) * (min - d);
+      if (sp > 5 && !v.parked) {
+        hurtPlayer(sp * 1.6, 'vehicle');
+        p.knockX = (v.vx / sp) * 6; p.knockZ = (v.vz / sp) * 6;
+        emit('camera-shake', { amount: 0.5 });
+      }
+    }
+  }
+}
+
 export function updatePlayer(dt) {
   const p = G.player;
   p.enterCooldown = Math.max(0, p.enterCooldown - dt);
@@ -42,13 +63,10 @@ export function updatePlayer(dt) {
   } else {
     p.mesh.visible = true;
     updateOnFoot(p, dt);
+    vehicleContacts(p);
     collideCircle(p, 0.4);
     p.mesh.position.set(p.x, 0, p.z);
     p.mesh.rotation.y = p.heading;
     animateHumanoid(p.mesh, dt, p.speed, p.aiming || p.fireT > 0.1);
   }
-}
-
-export function syncPlayerCar(dt) {
-  if (G.player.inCar) syncMesh(G.player.inCar, dt);
 }

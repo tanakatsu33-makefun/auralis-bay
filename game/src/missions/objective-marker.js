@@ -11,7 +11,7 @@ export function createBeam(color) {
   const g = new THREE.Group();
   const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.13, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false });
   const beam = new THREE.Mesh(beamGeo, mat);
-  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(2.2), toneMapped: false, fog: false }));
+  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(1.3), toneMapped: false, fog: false }));
   ring.position.y = 0.3;
   g.add(beam, ring);
   g.userData = { ring, beam };

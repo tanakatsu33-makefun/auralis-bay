@@ -40,16 +40,16 @@ async function sceneCombat() {
   setWanted(2);
   for (let i = 0; i < 3; i++) { const a = spawnPedestrian(dock.x - 4 + i * 6, dock.z + 9, { role: 'civilian', state: 'flee' }); a.threat = { x: dock.x, z: dock.z }; }
   spawnPatrolCar('x', 10, dock.x - 110, 1);
-  input.buttons[2] = true;
   advance(0.5, () => { camState.yaw = Math.PI / 2; });
   explodeVehicle(wreck);
   advance(2.3, () => {
-    camState.yaw = Math.PI / 2 - 0.05;
+    camState.yaw = Math.PI / 2 - 0.08;
+    camState.pitch = 0.1;
     input.buttons[0] = true; input.clicked[0] = true;
     p.hp = Math.max(p.hp, 60);
   });
-  input.buttons[2] = true;
   emit('banner', 'SHOOTOUT AT THE IRON GULL DOCKS');
+  document.getElementById('toast').classList.remove('show');
 }
 
 async function sceneStory() {

@@ -1,4 +1,6 @@
 // Keyboard + mouse state. Systems poll `input` each frame; `endFrame` clears one-shot values.
+import { emit } from './event-bus.js';
+
 export const input = {
   held: new Set(),
   tapped: new Set(),
@@ -47,7 +49,9 @@ export function installInput(canvas) {
   window.addEventListener('wheel', (e) => { input.wheel += Math.sign(e.deltaY); }, { passive: true });
   window.addEventListener('contextmenu', (e) => e.preventDefault());
   document.addEventListener('pointerlockchange', () => {
+    const was = input.locked;
     input.locked = document.pointerLockElement === canvas;
+    if (was && !input.locked) emit('pointer-lock-lost'); // Esc releases the mouse and is not delivered as a key
   });
 }
 
