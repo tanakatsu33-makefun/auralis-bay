@@ -87,10 +87,10 @@ export function updatePoliceLights(t) {
     if (!g.redLamp) continue;
     const on = v.siren && !v.dead;
     const phase = Math.floor((t * 6 + v.lightPhase) % 2);
-    g.redLamp.visible = on && phase === 0;
-    g.blueLamp.visible = on && phase === 1;
-    g.redGlow.visible = g.redLamp.visible;
-    g.blueGlow.visible = g.blueLamp.visible;
-    if (!on) { g.redLamp.visible = g.blueLamp.visible = true; g.redGlow.visible = g.blueGlow.visible = false; }
+    g.redLamp.visible = g.blueLamp.visible = true;
+    g.redGlow.visible = g.blueGlow.visible = on;
+    // the two bars trade brightness so the strobe reads in motion and both colours show in a still
+    g.redGlow.material.opacity = phase === 0 ? 1 : 0.55;
+    g.blueGlow.material.opacity = phase === 1 ? 1 : 0.55;
   }
 }

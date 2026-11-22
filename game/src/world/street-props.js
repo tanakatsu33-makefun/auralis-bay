@@ -86,7 +86,9 @@ function buildNeonSigns(group) {
     glows.push({ x: x + side[0] * 0.8, y, z: z + side[1] * 0.8, color, size: 10, gain: 1.1 });
   }
   const mesh = inst(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false }), boards, cols);
-  group.add(mesh, makeGlowPoints(glows, 12, 0.8));
+  const pts = makeGlowPoints(glows, 12, 0.8);
+  group.userData.neon = pts.material;
+  group.add(mesh, pts);
 }
 
 function buildPier(group) {

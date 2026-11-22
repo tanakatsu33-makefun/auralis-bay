@@ -70,10 +70,10 @@ export function buildCarMesh(modelId, color, { police = false } = {}) {
   body.add(head, tail);
   glows.head = head; glows.tail = tail;
   if (police) {
-    const red = part(body, boxGeo, redLamp, -0.4, lift + bodyH + cabinH + 0.1, L * spec.cabinShift, 0.7, 0.16, 0.3, false);
-    const blue = part(body, boxGeo, blueLamp, 0.4, lift + bodyH + cabinH + 0.1, L * spec.cabinShift, 0.7, 0.16, 0.3, false);
-    const gr = makeGlowSprite(0xff2030, 6, 0.9); gr.position.copy(red.position); gr.position.y += 0.4;
-    const gb = makeGlowSprite(0x3070ff, 6, 0.9); gb.position.copy(blue.position); gb.position.y += 0.4;
+    const red = part(body, boxGeo, redLamp, -0.46, lift + bodyH + cabinH + 0.14, L * spec.cabinShift, 0.8, 0.22, 0.38, false);
+    const blue = part(body, boxGeo, blueLamp, 0.46, lift + bodyH + cabinH + 0.14, L * spec.cabinShift, 0.8, 0.22, 0.38, false);
+    const gr = makeGlowSprite(0xff2030, 11, 1); gr.position.copy(red.position); gr.position.y += 0.4;
+    const gb = makeGlowSprite(0x3070ff, 11, 1); gb.position.copy(blue.position); gb.position.y += 0.4;
     body.add(gr, gb);
     glows.redLamp = red; glows.blueLamp = blue; glows.redGlow = gr; glows.blueGlow = gb;
   }

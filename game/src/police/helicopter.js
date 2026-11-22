@@ -55,12 +55,11 @@ export function installHelicopter(scene) {
   const coneGeo = new THREE.ConeGeometry(1, 1, 24, 1, true);
   coneGeo.translate(0, -0.5, 0);
   coneGeo.rotateX(-Math.PI / 2); // apex at origin, opening toward +z
-  beam = new THREE.Mesh(coneGeo, new THREE.MeshBasicMaterial({ color: 0xfff0c8, transparent: true, opacity: 0.16, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }));
+  beam = new THREE.Mesh(coneGeo, new THREE.MeshBasicMaterial({ color: 0xfff0c8, transparent: true, opacity: 0.05, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }));
   beam.visible = false;
   beam.frustumCulled = false;
   scene.add(beam);
-  pool = makeGlowSprite(0xfff2d0, 22, 0.7);
-  pool.material.depthTest = false;
+  pool = makeGlowSprite(0xfff2d0, 16, 0.22);
   pool.visible = false;
   scene.add(pool);
 }
@@ -121,12 +120,12 @@ export function updateHelicopter(dt) {
   const sx = heli.x, sy = heli.y - 1, sz = heli.z;
   spot.position.set(sx, sy, sz);
   spot.target.position.set(tx, 0, tz);
-  spot.intensity = damp(spot.intensity, 900, 4, dt);
+  spot.intensity = damp(spot.intensity, 170, 4, dt);
   const len = Math.hypot(tx - sx, sy, tz - sz);
   beam.visible = true;
   beam.position.set(sx, sy, sz);
   beam.lookAt(tx, 0, tz);
-  beam.scale.set(len * 0.15, len * 0.15, len);
+  beam.scale.set(len * 0.075, len * 0.075, len);
   pool.visible = true;
   pool.position.set(tx, 0.6, tz);
   // gunfire at 4+ stars

@@ -7,7 +7,7 @@ import { clamp, damp, dampAngle, angleDiff } from '../core/math-utils.js';
 import { insideBuilding } from '../world/city-generator.js';
 import { on } from '../core/event-bus.js';
 
-export const camState = { yaw: 0, pitch: 0.22, orbit: 0, orbitIdle: 0, shake: 0, fov: 62, dist: 5, aim: 0, lookBack: 0, hold: null };
+export const camState = { yaw: 0, pitch: 0.22, orbit: 0, orbitIdle: 0, shake: 0, fov: 62, dist: 5, aim: 0, lookBack: 0, hold: null, bias: { dist: 0, height: 0 } };
 const dir = new THREE.Vector3();
 const target = new THREE.Vector3();
 const want = new THREE.Vector3();
@@ -46,29 +46,29 @@ export function updateCamera(dt, camera) {
     const moving = Math.hypot(car.vx, car.vz);
     const travel = moving > 4 && car.speed > 0 ? Math.atan2(car.vx, car.vz) : car.heading;
     const base = car.speed < -1 ? car.heading + Math.PI : car.heading + angleDiff(car.heading, travel) * 0.4;
-    camState.lookBack = damp(camState.lookBack, isDown('KeyC') ? Math.PI : 0, 8, dt);
+    camState.lookBack = damp(camState.lookBack, isDown('KeyC') || camState.forceBack ? Math.PI : 0, 8, dt);
     if (mdx || mdy) { camState.orbit -= mdx * SENS; camState.pitch = clamp(camState.pitch + mdy * SENS, 0.02, 1.0); camState.orbitIdle = 0; }
     else camState.orbitIdle += dt;
     if (camState.orbitIdle > 1.2) camState.orbit = damp(camState.orbit, 0, 2.5, dt);
     camState.pitch = damp(camState.pitch, 0.22, camState.orbitIdle > 1.2 ? 1.5 : 0, dt);
     const targetYaw = (car.speed < -1 ? car.heading : base) + camState.orbit + camState.lookBack;
     camState.yaw = dampAngle(camState.yaw, targetYaw, 3.6 + Math.abs(car.speed) * 0.04, dt);
-    camState.dist = damp(camState.dist, 7.4 + clamp(Math.abs(car.speed) * 0.09, 0, 3.6), 3, dt);
+    camState.dist = damp(camState.dist, 8.2 + clamp(Math.abs(car.speed) * 0.09, 0, 3.6) + camState.bias.dist, 3, dt);
     const cp = Math.cos(camState.pitch);
     target.set(car.x + car.vx * 0.12, 1.5, car.z + car.vz * 0.12);
-    want.set(target.x - Math.sin(camState.yaw) * camState.dist * cp, 1.4 + Math.sin(camState.pitch) * camState.dist + 1.7, target.z - Math.cos(camState.yaw) * camState.dist * cp);
-    wantFov = 62 + clamp(Math.abs(car.speed), 0, 48) * 0.55;
+    want.set(target.x - Math.sin(camState.yaw) * camState.dist * cp, 1.4 + Math.sin(camState.pitch) * camState.dist + 1.7 + camState.bias.height, target.z - Math.cos(camState.yaw) * camState.dist * cp);
+    wantFov = 62 + clamp(Math.abs(car.speed), 0, 48) * 0.55 + (camState.bias.fov || 0);
     camState.aim = damp(camState.aim, 0, 6, dt);
   } else {
     camState.yaw -= mdx * SENS;
     camState.pitch = clamp(camState.pitch + mdy * SENS, -0.55, 1.1);
     const aiming = input.buttons[2] || p.fireT > 0;
     camState.aim = damp(camState.aim, input.buttons[2] ? 1 : 0, 10, dt);
-    camState.dist = 4.6 - camState.aim * 2.1;
+    camState.dist = 5.6 - camState.aim * 1.8;
     const cp = Math.cos(camState.pitch), sy = Math.sin(camState.yaw), cy = Math.cos(camState.yaw);
-    const shoulder = 0.55 + camState.aim * 0.35;
-    target.set(p.x, 1.55, p.z);
-    want.set(p.x - sy * camState.dist * cp + (-cy) * shoulder, 1.55 + Math.sin(camState.pitch) * camState.dist, p.z - cy * camState.dist * cp + sy * shoulder);
+    const shoulder = 0.9 + camState.aim * 0.25;
+    target.set(p.x, 1.7, p.z);
+    want.set(p.x - sy * camState.dist * cp + (-cy) * shoulder, 1.85 + Math.sin(camState.pitch) * camState.dist, p.z - cy * camState.dist * cp + sy * shoulder);
     wantFov = 60 - camState.aim * 14 + (aiming ? 0 : 0);
   }
   pullIn(target, want);
@@ -81,6 +81,6 @@ export function updateCamera(dt, camera) {
   camera.fov = damp(camera.fov, wantFov, 4, dt);
   camera.updateProjectionMatrix();
   dir.set(Math.sin(camState.yaw), -Math.sin(camState.pitch) * 0.6, Math.cos(camState.yaw));
-  if (car) camera.lookAt(target.x + dir.x * 2, 1.3, target.z + dir.z * 2);
+  if (car) camera.lookAt(target.x + dir.x * 2, 1.3 + (camState.bias.lookY || 0), target.z + dir.z * 2);
   else camera.lookAt(camera.position.x + Math.sin(camState.yaw) * Math.cos(camState.pitch) * 20, camera.position.y - Math.sin(camState.pitch) * 20, camera.position.z + Math.cos(camState.yaw) * Math.cos(camState.pitch) * 20);
 }

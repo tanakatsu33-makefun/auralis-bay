@@ -17,9 +17,14 @@ export function showDialogue(speaker, lines, onDone) {
   prevMode = G.mode === 'dialogue' ? prevMode : G.mode;
   G.mode = 'dialogue';
   drawPortrait(document.getElementById('dialogue-portrait'), who);
-  document.getElementById('dialogue-name').textContent = CAST[who].name + '  ·  ' + CAST[who].role.toUpperCase();
+  setSpeaker();
   box().classList.remove('hidden');
   render();
+}
+
+function setSpeaker() {
+  const c = CAST[who];
+  document.getElementById('dialogue-name').innerHTML = `${c.name} <small>${c.role.toUpperCase()}</small>`;
 }
 
 function render() {
@@ -57,7 +62,7 @@ export function closeDialogue() {
 export function setDialogueStatic(speaker, lines, index, fullTyped = true) {
   who = speaker; queue = lines; lineIndex = index; typed = fullTyped ? 9999 : 0;
   drawPortrait(document.getElementById('dialogue-portrait'), who);
-  document.getElementById('dialogue-name').textContent = CAST[who].name + '  ·  ' + CAST[who].role.toUpperCase();
+  setSpeaker();
   box().classList.remove('hidden');
   G.mode = 'dialogue';
   render();

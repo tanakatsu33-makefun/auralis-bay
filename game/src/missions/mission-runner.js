@@ -3,7 +3,7 @@ import { G } from '../core/game-state.js';
 import { emit, on } from '../core/event-bus.js';
 import { rand, randRange } from '../core/seeded-random.js';
 import { MISSIONS } from './mission-scripts.js';
-import { PLACES } from './story-arc.js';
+import { PLACES, CAST } from './story-arc.js';
 import { showDialogue } from '../ui/dialogue-box.js';
 import { spawnPedestrian } from '../traffic/pedestrians.js';
 import { insideBuilding } from '../world/city-generator.js';
@@ -25,6 +25,13 @@ export function startMission(index) {
   M().active = mission;
   M().step = 0;
   emit('mission-start', mission);
+  beginStep();
+}
+
+// Used by save/restore tools and the screenshot director to enter a mission part-way through.
+export function jumpToStep(n) {
+  if (!M().active) return;
+  M().step = n;
   beginStep();
 }
 
@@ -109,7 +116,8 @@ export function getObjective() {
   if (step.t === 'chase' && rt?.car) pos = rt.car;
   if (step.t === 'kill' && rt) { const live = rt.actors.filter((a) => !a.dead); pos = live[0] || pos; }
   if (step.t === 'getcar' || step.t === 'lose') pos = null;
-  return { text: step.text || '', pos, step };
+  const text = step.text || (step.t === 'talk' ? 'Talk to ' + CAST[step.who].name : '');
+  return { text, pos, step };
 }
 
 export function updateMission(dt) {

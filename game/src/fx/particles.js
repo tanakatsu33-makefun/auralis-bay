@@ -105,7 +105,7 @@ export function installParticles(scene) {
     for (let i = 0; i < 6; i++) smoke.emit(a.x, 1.2, a.z, randRange(-2, 2), randRange(0.5, 2.5), randRange(-2, 2), randRange(0.3, 0.6), 0.3, 0, [0.7, 0.05, 0.12], 0.9, -9, 0.5);
   });
   on('muzzle', (e) => {
-    glow.emit(e.x, e.y, e.z, 0, 0, 0, 0.07, 1.6, 0, [1, 0.8, 0.4], 1, 0, 0);
+    glow.emit(e.x, e.y, e.z, 0, 0, 0, 0.06, 0.6, 0, [1, 0.8, 0.4], 0.9, 0, 0);
   });
   on('dust', (e) => smoke.emit(e.x, 0.2, e.z, randRange(-0.5, 0.5), 0.5, randRange(-0.5, 0.5), 0.9, 0.9, 2, [0.75, 0.68, 0.62], 0.35, 0, 1));
 }

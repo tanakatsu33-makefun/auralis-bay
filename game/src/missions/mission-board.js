@@ -3,7 +3,7 @@ import { G } from '../core/game-state.js';
 import { on, emit } from '../core/event-bus.js';
 import { wasTapped } from '../core/input-controls.js';
 import { MISSIONS } from './mission-scripts.js';
-import { PLACES, CAST } from './story-arc.js';
+import { PLACES } from './story-arc.js';
 import { startMission, getObjective } from './mission-runner.js';
 import { createBeam, placeBeam } from './objective-marker.js';
 
@@ -63,7 +63,7 @@ export function renderList() {
     const active = G.mission.active === m;
     const cls = done ? 'done' : active || i === G.mission.index ? 'active' : 'locked';
     const mark = done ? '✔' : active ? '▶' : i === G.mission.index ? '●' : '○';
-    return `<div class="row ${cls}">${mark} ${i + 1}. ${m.title}<br><small>${CAST[m.giver].name} · $${m.reward}</small></div>`;
+    return `<div class="row ${cls}">${mark} ${i + 1}. ${m.title} <small>$${m.reward}</small></div>`;
   });
   el.innerHTML = '<h3>STORY MISSIONS</h3>' + rows.join('');
 }

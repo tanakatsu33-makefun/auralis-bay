@@ -9,9 +9,11 @@ import { chromium } from '/workspace/makefun/gta6/tools/node_modules/playwright-
 const root = fileURLToPath(new URL('..', import.meta.url));
 const args = process.argv.slice(2);
 let outDir = join(root, 'screenshots');
+let evalExpr = null; // optional JS expression evaluated in the page after the scene is ready (debugging aid)
 const scenes = [];
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--out') outDir = args[++i];
+  else if (args[i] === '--eval') evalExpr = args[++i];
   else scenes.push(args[i]);
 }
 const DEFAULT = { cover: '1-cover-chase', combat: '2-street-shootout', story: '3-story-mission', title: '4-title-screen' };
@@ -36,6 +38,7 @@ try {
     await page.goto(`http://localhost:${port}/index.html?shot=${scene}&seed=1`);
     await page.waitForFunction('window.__shotReady === true', null, { timeout: 150000 });
     await page.waitForTimeout(400);
+    if (evalExpr) console.log('eval:', JSON.stringify(await page.evaluate(evalExpr)));
     const file = join(outDir, (DEFAULT[scene] ?? scene) + '.jpg');
     await page.screenshot({ path: file, type: 'jpeg', quality: 85 });
     console.log('saved', file, errors.length ? 'ERRORS: ' + errors.join(' | ') : 'ok');

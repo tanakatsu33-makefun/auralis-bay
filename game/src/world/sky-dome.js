@@ -1,7 +1,7 @@
 // Golden-hour sky dome and the sparkling ocean. Both use one shared GLSL sky function.
 import * as THREE from 'three';
 
-export const SUN_DIR = new THREE.Vector3(-0.86, 0.2, 0.28).normalize(); // low sun over the western ocean
+export const SUN_DIR = new THREE.Vector3(-0.72, 0.2, 0.55).normalize(); // low sun over the western ocean
 export const FOG_COLOR = 0xf2a276;
 
 const SKY_GLSL = `

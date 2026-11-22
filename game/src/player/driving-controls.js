@@ -7,6 +7,7 @@ import { G } from '../core/game-state.js';
 export function updateDriving(p, car, dt) {
   const inp = car.input;
   if (G.mode !== 'play') { inp.throttle = 0; inp.handbrake = 0; return; }
+  if (G.autopilot) { G.autopilot(inp, car); return; } // screenshot director only
   inp.throttle = axis(['KeyS', 'ArrowDown'], ['KeyW', 'ArrowUp']);
   const wantSteer = axis(['KeyD', 'ArrowRight'], ['KeyA', 'ArrowLeft']) * -1; // positive = left turn
   // ease the wheel in and recentre it faster than it turns, like a real rack

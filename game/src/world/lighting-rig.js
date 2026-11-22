@@ -6,9 +6,9 @@ let sun, hemi;
 
 export function createLighting(scene) {
   scene.fog = new THREE.Fog(FOG_COLOR, 90, 1100);
-  hemi = new THREE.HemisphereLight(0xff9a8a, 0x4a2c6a, 0.55);
+  hemi = new THREE.HemisphereLight(0xd8b0ff, 0x7a5a8a, 0.75);
   scene.add(hemi);
-  sun = new THREE.DirectionalLight(0xffa860, 2.1);
+  sun = new THREE.DirectionalLight(0xffb070, 2.6);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
   const s = 70;
