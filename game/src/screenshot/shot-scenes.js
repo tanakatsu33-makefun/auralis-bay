@@ -60,19 +60,20 @@ async function sceneStory() {
   const p = G.player;
   const tower = PLACES.tower;
   setMode('play');
-  placePlayer(tower.x - 8, tower.z - 44, 0.1);
+  placePlayer(457.5, 205, -0.5);
   p.invulnerable = true; p.armor = 60;
-  camState.yaw = 0.12; camState.pitch = -0.16;
+  camState.yaw = -0.55; camState.pitch = -0.32;
   removeAllNonEssential(null);
   populateInstantly(p, 8, 6, 10);
-  spawnVehicle('bulwark', tower.x + 10, tower.z - 38, 0.3, { color: 0x2b2b3a });
-  spawnPedestrian(tower.x - 3, tower.z - 34, { role: 'gang', state: 'idle', weapon: 'smg' });
-  spawnPedestrian(tower.x + 1, tower.z - 30, { role: 'civilian', state: 'idle' });
+  spawnVehicle('bulwark', 452, 222, 0, { color: 0x2b2b3a });
+  spawnPedestrian(452, 196, { role: 'gang', state: 'idle', weapon: 'smg' });
+  spawnPedestrian(462, 214, { role: 'civilian', state: 'idle' });
   startMission(5);
   jumpToStep(3);
-  advance(1.2, () => { camState.yaw = 0.12; camState.pitch = -0.16; });
+  advance(1.2, () => { camState.yaw = -0.55; camState.pitch = -0.32; });
   setDialogueStatic('silas', MISSIONS[5].steps[3].lines, 0, true);
   showList(true);
+  document.getElementById('toast').classList.remove('show');
 }
 
 async function sceneTitle() {
