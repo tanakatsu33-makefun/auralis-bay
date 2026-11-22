@@ -1,5 +1,9 @@
 # NEON TIDE: Auralis Bay
 
+[![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![rank](https://make.fun/badge/gta6-01/tanakatsu33-makefun/auralis-bay/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![reward](https://make.fun/badge/gta6-01/tanakatsu33-makefun/auralis-bay/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+
 An original open-world crime game that runs in desktop Chrome from static files (three.js r170 is vendored, no build step,
 no network). You play **Juno Vance**, a courier who comes back to the sun-drenched coastal megacity of **Auralis Bay** at
 golden hour to expose the shipping tycoon **Silas Vantongeren** and the corrupt **Commissioner Harrow**.
@@ -70,3 +74,5 @@ Open `http://localhost:8080` in desktop Chrome (any static file server works). C
 `node tools/smoke-test.mjs` drives the real game headlessly (new game, carjack, drive, shoot, save, missions, police, death, arrest).
 
 MIT licensed.
+
+Entered on [make.fun](https://make.fun/bounty/gta6-01) for the bounty "gta6-01".
